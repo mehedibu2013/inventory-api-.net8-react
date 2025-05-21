@@ -1,0 +1,60 @@
+## Ignore Visual Studio temporary files, build results, and
+## user-specific files
+
+# Build results
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+artifacts/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider project files
+.idea/
+
+# VS Code settings
+.vscode/
+
+# ASP.NET
+*.db
+*.db-shm
+*.db-wal
+
+# Entity Framework
+Migrations/
+
+# Secrets
+secrets.json
+
+# Publish artifacts
+*.publish.xml
+
+# dotnet tools
+.dotnet/
+
+# Auto-generated files
+Generated_Code/
+
+# Logs
+*.log
+
+# Other
+*.DS_Store
+Thumbs.db
+desktop.ini
+
+# .NET Core specific
+project.lock.json
+project.fragment.lock.json
+global.json
+.nuget/
+*.nupkg
+*.snupkg
+
+# Mac/Linux system files
+.DS_Store
