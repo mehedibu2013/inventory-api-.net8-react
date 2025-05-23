@@ -2,11 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using ERPSystem.API.Models;
 using ERPSystem.API.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ERPSystem.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize] 
 public class InventoryController : ControllerBase
 {
     private readonly ERPDbContext _context;
