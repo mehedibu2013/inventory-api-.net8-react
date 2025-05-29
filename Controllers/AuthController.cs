@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Options;
 
 namespace ERPSystem.API.Controllers
 {
@@ -11,11 +12,17 @@ namespace ERPSystem.API.Controllers
     [Route("[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
+        private readonly JwtSettings _jwtSettings;
 
-        public AuthController(IConfiguration configuration)
+        public AuthController(IOptions<JwtSettings> jwtSettings)
         {
-            _configuration = configuration;
+            _jwtSettings = jwtSettings?.Value ?? throw new ArgumentNullException(nameof(jwtSettings));
+            if (string.IsNullOrEmpty(_jwtSettings.SecretKey) || 
+                string.IsNullOrEmpty(_jwtSettings.Issuer) || 
+                string.IsNullOrEmpty(_jwtSettings.Audience))
+            {
+                throw new InvalidOperationException("JwtSettings configuration is incomplete.");
+            }
         }
 
         /// <summary>
@@ -24,6 +31,12 @@ namespace ERPSystem.API.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginModel model)
         {
+            // 🔐 Validate input
+            if (model == null || string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Password))
+            {
+                return BadRequest("Invalid login request.");
+            }
+
             // 🔐 Simulate user validation (replace with real DB check later)
             if (model.Username == "admin" && model.Password == "password")
             {
@@ -33,16 +46,15 @@ namespace ERPSystem.API.Controllers
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 };
 
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                    _configuration["JwtSettings:SecretKey"]));
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
 
                 var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
                 var token = new JwtSecurityToken(
-                    issuer: _configuration["JwtSettings:Issuer"],
-                    audience: _configuration["JwtSettings:Audience"],
+                    issuer: _jwtSettings.Issuer,
+                    audience: _jwtSettings.Audience,
                     claims: claims,
-                    expires: DateTime.Now.AddMinutes(30),
+                    expires: DateTime.Now.AddMinutes(_jwtSettings.TokenExpirationMinutes),
                     signingCredentials: creds);
 
                 var tokenHandler = new JwtSecurityTokenHandler();
@@ -54,13 +66,13 @@ namespace ERPSystem.API.Controllers
                 });
             }
 
-            return Unauthorized();
+            return Unauthorized("Invalid credentials.");
         }
     }
 
     public class LoginModel
     {
-        public string Username { get; set; }
-        public string Password { get; set; }
+        public required string Username { get; set; }
+        public required string Password { get; set; }
     }
 }

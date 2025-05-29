@@ -25,14 +25,12 @@ artifacts/
 *.db-shm
 *.db-wal
 
-# Entity Framework
-Migrations/
-
 # Secrets
 secrets.json
 
 # Publish artifacts
 *.publish.xml
+Properties/PublishProfiles/
 
 # dotnet tools
 .dotnet/
@@ -51,10 +49,17 @@ desktop.ini
 # .NET Core specific
 project.lock.json
 project.fragment.lock.json
-#global.json
+#.global.json
 .nuget/
 *.nupkg
 *.snupkg
 
 # Mac/Linux system files
 .DS_Store
+
+# React
+ClientApp/dist/
+ClientApp/node_modules/
+ClientApp/package-lock.json  # Ignored to avoid conflicts; use package.json for dependency resolution
+ClientApp/.env
+ClientApp/.vite/

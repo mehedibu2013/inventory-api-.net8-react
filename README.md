@@ -1,10 +1,9 @@
 
 ---
 
-# 📦 Inventory API - ERP Module
+# 📦 ERP Module
 
-A simple Inventory Management module built with **.NET 8 Web API**, **Entity Framework Core**, and **MySQL**.  
-This is part of a modular ERP system.
+A simple Inventory Management module built with .NET 8 Web API, Entity Framework Core, MySQL, and a React frontend. This is part of a modular ERP system, combining a robust backend with a user-friendly web interface.
 
 ---
 
@@ -15,11 +14,14 @@ This is part of a modular ERP system.
 - Built using .NET 8 and ASP.NET Core Web API
 - Uses MySQL as the relational database
 - Swagger UI enabled for testing endpoints
+- React-based frontend for a dynamic user interface
+- Real-time product listing and addition via the web app
 
 ---
 
 ## 🔧 Tech Stack
 
+Backend:
 - ASP.NET Core 8 Web API
 - C# 12
 - Entity Framework Core
@@ -28,6 +30,13 @@ This is part of a modular ERP system.
 - Swagger (Swashbuckle)
 - JWT Authentication
 
+Frontend:
+- React 18.3.1
+- Vite 5.3.1
+- Axios for HTTP requests
+- React Router DOM for client-side routing
+- JavaScript (JSX)
+
 ---
 
 ## 🖥️ Getting Started
@@ -35,8 +44,8 @@ This is part of a modular ERP system.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/mehedibu2013/InventoryAPI.git  
-cd InventoryAPI
+git clone https://github.com/mehedibu2013/ERPSystem.API.git  
+cd ERPSystem.API
 ```
 
 ### 2. Update MySQL Configuration
@@ -86,8 +95,7 @@ dotnet run
 
 Swagger UI will be available at:
 
-* 🔗 `http://localhost:5000/swagger` (HTTP)  
-* 🔐 `https://localhost:5001/swagger` (HTTPS)
+* 🔗 `http://localhost:5240/swagger` (HTTP)  
 
 ---
 
@@ -114,7 +122,6 @@ You'll receive a response like:
   "expiration": "2025-06-05T12:30:00Z"
 }
 ```
-
 ### 🔐 Use the Token in Swagger
 
 1. Click the **Authorize** button at the top-right of Swagger UI.
@@ -144,18 +151,67 @@ You'll receive a response like:
   "unitPrice": 20.99
 }
 ```
+---
+
+## 🖥️ Frontend Setup (React)
+
+The frontend of the application is built using **React** and resides inside the `ClientApp` directory.
+
+### 🔧 Getting Started
+
+#### 1. Navigate to the ClientApp Directory
+```bash
+cd ClientApp
+```
+
+#### 2. Install Dependencies
+```bash
+npm install
+```
+
+#### 3. Configure Environment Variables
+
+Create or edit the `.env` file in the `ClientApp` directory with the following content:
+```env
+VITE_API_URL=http://localhost:5240
+```
+This ensures the frontend communicates correctly with the backend API running on port `5240`.
 
 ---
 
-## 🛠 Future Enhancements
+## 🌐 Application Features
 
-* Implement role-based authorization (`[Authorize(Roles = "Admin")]`)
-* Add user registration and password hashing
-* Support for refresh tokens
-* Update/Delete product support
-* Stock level alerts
-* Product categories
-* Extend to full ERP (Finance, Procurement, HR)
+### 🔐 Login Page (`/login`)
+- Allows users to log in using default credentials: `admin/password`.
+- On successful login, a JWT token is obtained and stored in `localStorage`.
+- Redirects the user to the `/inventory` page.
+
+### 📦 Inventory Page (`/inventory`)
+- Displays a list of products fetched from the `/api/inventory` endpoint.
+- Provides a form to add new products via a POST request.
+- Automatically updates the product list after a successful addition.
+  
+### 🔐 Authentication Management
+- Uses **AuthContext** to manage authentication state and JWT token.
+- Token is persisted across sessions using `localStorage`.
+
+### 🧭 Routing
+- Navigation between pages is handled using `react-router-dom`.
+- Available routes:
+  - `/login`
+  - `/inventory`
+---
+
+## 🛠️ Future Enhancements
+
+- ✅ Implement role-based authorization (`[Authorize(Roles = "Admin")]`)
+- 🧾 Add user registration and secure password hashing
+- ♻️ Support for refresh tokens
+- ✏️ Add support for editing and deleting products in the frontend
+- 💬 Display success messages or loading spinners during API calls
+- 🔔 Add stock level alerts
+- 🗂️ Introduce product categories
+- 📈 Extend the system into a full ERP suite (Finance, Procurement, HR)
 
 ---
 
@@ -170,5 +226,3 @@ This project is open-source and available under the [MIT License](LICENSE).
 Made by [Mehedi](https://github.com/mehedibu2013)
 
 ---
-
-Let me know if you'd like a downloadable version of this README or want to generate a ZIP of the full working project!

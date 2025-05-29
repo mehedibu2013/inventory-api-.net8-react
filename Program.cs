@@ -17,8 +17,14 @@ builder.Services.AddDbContext<ERPDbContext>(options =>
         new MySqlServerVersion(new Version(8, 0, 32))
     ));
 
-// 2. Configure JwtSettings from appsettings.json
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+// 2. Configure JwtSettings from appsettings.json with null check
+var jwtSettingsSection = builder.Configuration.GetSection("JwtSettings");
+var jwtSettings = jwtSettingsSection.Get<JwtSettings>();
+if (jwtSettings == null || string.IsNullOrEmpty(jwtSettings.SecretKey) || string.IsNullOrEmpty(jwtSettings.Issuer) || string.IsNullOrEmpty(jwtSettings.Audience))
+{
+    throw new InvalidOperationException("JwtSettings configuration is missing or incomplete.");
+}
+builder.Services.Configure<JwtSettings>(jwtSettingsSection);
 
 // 3. JWT Authentication
 builder.Services.AddAuthentication(options =>
@@ -28,17 +34,16 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
-    var key = Encoding.ASCII.GetBytes(jwtSettings.SecretKey);
+    var key = Encoding.ASCII.GetBytes(jwtSettings.SecretKey ?? throw new InvalidOperationException("SecretKey is not configured."));
 
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(key),
         ValidateIssuer = true,
-        ValidIssuer = jwtSettings.Issuer,
+        ValidIssuer = jwtSettings.Issuer ?? throw new InvalidOperationException("Issuer is not configured."),
         ValidateAudience = true,
-        ValidAudience = jwtSettings.Audience,
+        ValidAudience = jwtSettings.Audience ?? throw new InvalidOperationException("Audience is not configured."),
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
     };
@@ -90,6 +95,17 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -99,7 +115,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
+app.UseCors("AllowReactApp");
 app.UseAuthentication(); // 🔐 Must come before UseAuthorization()
 app.UseAuthorization();
 
