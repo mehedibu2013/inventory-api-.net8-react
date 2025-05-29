@@ -220,9 +220,3 @@ This ensures the frontend communicates correctly with the backend API running on
 This project is open-source and available under the [MIT License](LICENSE).
 
 ---
-
-## 👤 Author
-
-Made by [Mehedi](https://github.com/mehedibu2013)
-
----
