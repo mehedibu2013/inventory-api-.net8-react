@@ -1,6 +1,38 @@
-# React + TypeScript + Vite
+# Inventory Management System - React Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the React frontend for the Inventory Management System, built with React, TypeScript, and Vite.
+
+## Technology Stack
+
+- **Frontend**: React 18 with TypeScript
+- **Build Tool**: Vite
+- **Backend**: .NET 8 API
+- **Database**: MySQL
+- **Containerization**: Docker
+- **Orchestration**: Kubernetes
+- **CI/CD**: GitHub Actions + ArgoCD
+
+## CI/CD Pipeline
+
+This project uses a modern GitOps approach to CI/CD:
+
+1. **Continuous Integration (GitHub Actions)**
+   - Code is pushed to the GitHub repository
+   - GitHub Actions workflow is triggered
+   - Application is built and tested
+   - Docker image is created and pushed to GitHub Container Registry (ghcr.io)
+
+2. **Continuous Deployment (ArgoCD)**
+   - ArgoCD detects new image via ArgoCD Image Updater
+   - Kubernetes manifests are applied to the cluster
+   - Application is deployed with zero downtime
+
+3. **Infrastructure**
+   - Kubernetes cluster (using KIND for local development)
+   - MySQL database for persistence
+   - Helm charts for Kubernetes resource management
+
+## Development Setup
 
 Currently, two official plugins are available:
 

@@ -202,6 +202,88 @@ This ensures the frontend communicates correctly with the backend API running on
   - `/inventory`
 ---
 
+## 🚀 CI/CD Pipeline
+
+This project uses a modern GitOps approach for continuous integration and deployment:
+
+### 🔄 Continuous Integration (GitHub Actions)
+
+- Code is pushed to the GitHub repository
+- GitHub Actions workflow is triggered automatically
+- Application is built and tested
+- Docker image is created and pushed to GitHub Container Registry (ghcr.io)
+
+```yaml
+# Key steps in GitHub Actions workflow
+name: Build and Deploy
+on:
+  push:
+    branches: [master]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.CR_PAT }}
+    - name: Build and Push Docker Image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: ghcr.io/${{ github.actor }}/inventory-app:latest
+```
+
+### 🌐 Continuous Deployment (ArgoCD)
+
+- ArgoCD monitors the GitHub repository for changes
+- ArgoCD Image Updater detects new container images
+- Application is deployed to Kubernetes with zero downtime
+- Configuration is managed through Helm charts
+
+```yaml
+# ArgoCD Application manifest
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: inventory-app
+  namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: inventory=ghcr.io/mehedibu2013/inventory-app
+    argocd-image-updater.argoproj.io/inventory.helm.imageTagParameter: image.tag
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/mehedibu2013/inventory-api-.net8-react
+    targetRevision: master
+    path: helm/inventory-app
+    helm:
+      parameters:
+      - name: image.tag
+        value: "latest"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      selfHeal: true
+```
+
+### 🏗️ Infrastructure
+
+- **Kubernetes**: Container orchestration (using KIND for local development)
+- **Helm Charts**: Package management for Kubernetes resources
+- **MySQL**: Database for persistence
+- **GitHub Container Registry**: Storage for Docker images
+
 ## 🛠️ Future Enhancements
 
 - ✅ Implement role-based authorization (`[Authorize(Roles = "Admin")]`)
