@@ -7,7 +7,7 @@ RUN npm install
 RUN npm run build
 
 # Stage 2: Build .NET API
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0.405 AS build
 WORKDIR /src
 COPY *.sln ./
 COPY ERPSystem.API.csproj ./
