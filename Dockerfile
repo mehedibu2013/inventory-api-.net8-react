@@ -21,5 +21,5 @@ RUN dotnet publish -c Release -o /app
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build /app .
-COPY --from=react-build /app/build /wwwroot
+COPY --from=react-build /app/dist /wwwroot
 ENTRYPOINT ["dotnet", "ERPSystem.API.dll"]
