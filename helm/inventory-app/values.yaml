@@ -1,0 +1,7 @@
+image:
+  repository: ghcr.io/mehedibu2013/inventory-app
+  tag: latest
+  pullPolicy: IfNotPresent
+service:
+  type: ClusterIP
+  port: 80

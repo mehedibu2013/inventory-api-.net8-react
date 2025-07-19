@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: inventory-app
+  namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: inventory=ghcr.io/mehedibu2013/inventory-app
+    argocd-image-updater.argoproj.io/inventory.helm.imageTagParameter: image.tag
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/mehedibu2013/inventory-api-.net8-react
+    targetRevision: main
+    path: helm/inventory-app
+    helm:
+      parameters:
+      - name: image.tag
+        value: "latest"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      selfHeal: true
