@@ -10,7 +10,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/mehedibu2013/inventory-api-.net8-react
-    targetRevision: main
+    targetRevision: master
     path: helm/inventory-app
     helm:
       parameters:
